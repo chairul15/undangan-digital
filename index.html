@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Undangan Digital Interaktif</title>
+  <meta name="description" content="Undangan digital interaktif dengan animasi, countdown, confetti, RSVP, dan Add to Calendar – cukup 1 file HTML." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1: #0f172a; /* slate-900 */
+      --bg2: #1e293b; /* slate-800 */
+      --acc1:#a78bfa; /* violet-300 */
+      --acc2:#60a5fa; /* blue-400 */
+      --acc3:#34d399; /* emerald-400 */
+      --glass: rgba(255,255,255,.08);
+      --glass-2: rgba(255,255,255,.12);
+      --text: #e5e7eb;
+      --muted:#94a3b8;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background:linear-gradient(120deg,var(--bg1),var(--bg2));
+      color:var(--text);font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      overflow-x:hidden;
+    }
+    /* Animated gradient lights */
+    .lights{
+      position:fixed;inset:0;pointer-events:none;z-index:0;
+      filter: blur(80px) saturate(130%);
+    }
+    .blob{position:absolute;width:38vmax;height:38vmax;border-radius:50%;opacity:.35;mix-blend-mode:screen;animation: drift 18s ease-in-out infinite;}
+    .b1{background:radial-gradient(circle at 30% 30%, var(--acc1), transparent 60%);left:-8vmax;top:-6vmax;}
+    .b2{background:radial-gradient(circle at 70% 70%, var(--acc2), transparent 60%);right:-10vmax;bottom:-12vmax;animation-duration:22s;}
+    .b3{background:radial-gradient(circle at 40% 60%, var(--acc3), transparent 60%);left:35%;top:45%;animation-duration:26s;}
+    @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(2vmax,-2vmax) scale(1.1)}}
+
+    /* Canvas confetti */
+    #confetti{position:fixed;inset:0;z-index:30;pointer-events:none}
+
+    /* Layout */
+    header{position:relative;z-index:10;min-height:100svh;display:grid;place-items:center;padding:24px}
+    .card{
+      width:min(960px,92vw);background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);backdrop-filter: blur(10px);
+      border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.35);
+      padding:32px 28px;position:relative;overflow:hidden;
+    }
+    .badge{display:inline-flex;gap:8px;align-items:center;font-size:12px;padding:8px 12px;border-radius:999px;background:var(--glass);border:1px solid rgba(255,255,255,.14);color:var(--muted)}
+    h1{font-size:clamp(28px,5vw,48px);line-height:1.15;margin:12px 0 8px}
+    .sub{font-size:clamp(14px,2.5vw,18px);color:var(--muted);}
+
+    .meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
+    .chip{background:var(--glass);padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.12);display:flex;gap:10px;align-items:center}
+    .chip svg{flex:0 0 20px}
+
+    .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+    .btn{appearance:none;border:none;cursor:pointer;border-radius:14px;padding:14px 18px;font-weight:600}
+    .btn.primary{background:linear-gradient(90deg,var(--acc1),var(--acc2));color:#0b1020}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--text)}
+
+    .countdown{display:flex;gap:12px;margin:22px 0;flex-wrap:wrap}
+    .timebox{min-width:86px;background:var(--glass);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:10px;text-align:center}
+    .timebox .num{font-size:28px;font-weight:700}
+    .timebox .lbl{font-size:12px;color:var(--muted)}
+
+    /* Sections */
+    section{position:relative;z-index:10;padding:56px 24px}
+    .section-inner{width:min(980px,94vw);margin:0 auto}
+
+    .panel{background:var(--glass);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:22px}
+
+    /* Footer */
+    footer{padding:40px 24px;color:var(--muted);text-align:center}
+
+    /* Decorative corner ornaments (SVG) */
+    .ornament{position:absolute;opacity:.2}
+    .ornament.tl{left:-6px;top:-6px}
+    .ornament.br{right:-6px;bottom:-6px;transform:scaleX(-1) scaleY(-1)}
+
+    /* Small tweaks */
+    a{color:inherit}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    @media (max-width:720px){
+      .meta{grid-template-columns:1fr}
+      .timebox{min-width:72px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient gradient blobs -->
+  <div class="lights">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <!-- Confetti canvas -->
+  <canvas id="confetti"></canvas>
+
+  <header>
+    <div class="card" role="region" aria-label="Kartu Undangan">
+      <svg class="ornament tl" width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 110 C40 80, 80 40, 110 10" stroke="white" stroke-opacity=".6" stroke-width="2"/>
+        <circle cx="10" cy="110" r="4" fill="white"/>
+      </svg>
+      <svg class="ornament br" width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 110 C40 80, 80 40, 110 10" stroke="white" stroke-opacity=".6" stroke-width="2"/>
+        <circle cx="10" cy="110" r="4" fill="white"/>
+      </svg>
+
+      <div class="badge" aria-label="Jenis acara">
+        <span>✨ Undangan Spesial</span>
+      </div>
+      <h1 id="title">Grand Launch & Gathering</h1>
+      <p class="sub">Mari rayakan momen berkesan bersama kami — hadirnya produk baru dengan pengalaman imersif.</p>
+
+      <div class="meta" aria-label="Informasi acara">
+        <div class="chip" title="Tanggal & Waktu">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 2 0v1zm13 7H4v10h16z"/></svg>
+          <span id="datetime">31 Des 2025 • 19:00 WIB</span>
+        </div>
+        <div class="chip" title="Lokasi">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+          <span>Grand Hall, Jambi</span>
+        </div>
+        <div class="chip" title="Kode Busana">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M16 3l2 4-3 2v10H9V9L6 7l2-4 4 2 4-2z"/></svg>
+          <span>Smart Casual</span>
+        </div>
+      </div>
+
+      <div class="countdown" aria-live="polite">
+        <div class="timebox"><div class="num" id="d">–</div><div class="lbl">Hari</div></div>
+        <div class="timebox"><div class="num" id="h">–</div><div class="lbl">Jam</div></div>
+        <div class="timebox"><div class="num" id="m">–</div><div class="lbl">Menit</div></div>
+        <div class="timebox"><div class="num" id="s">–</div><div class="lbl">Detik</div></div>
+      </div>
+
+      <div class="cta">
+        <button class="btn primary" id="openBtn">Buka Undangan</button>
+        <button class="btn ghost" id="rsvpBtn" title="Konfirmasi via WhatsApp">RSVP (WhatsApp)</button>
+        <button class="btn ghost" id="calBtn" title="Tambahkan ke kalender">Add to Calendar</button>
+        <button class="btn ghost" id="shareBtn" title="Bagikan ke WhatsApp / salin tautan">Bagikan</button>
+      </div>
+    </div>
+  </header>
+
+  <section id="details">
+    <div class="section-inner">
+      <div class="panel">
+        <h2 style="margin:0 0 8px;font-size:clamp(22px,4vw,32px)">Tentang Acara</h2>
+        <p style="color:var(--muted);margin:0 0 14px">
+          Kami mengundang Anda untuk menyaksikan peluncuran resmi dan temu akrab komunitas. Nikmati demo produk, hiburan ringan, serta doorprize untuk tamu yang hadir tepat waktu.
+        </p>
+        <ul style="margin:0;padding-left:18px;line-height:1.9;color:var(--text)">
+          <li>Registrasi & coffee: 18:00 WIB</li>
+          <li>Opening & keynote: 19:00 WIB</li>
+          <li>Demo & Q&A: 19:45 WIB</li>
+          <li>Networking: 20:30 WIB</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="maps">
+    <div class="section-inner">
+      <div class="panel">
+        <h3 style="margin:0 0 10px;font-size:clamp(18px,3.2vw,24px)">Lokasi</h3>
+        <p style="color:var(--muted);margin:0 0 14px">Grand Hall, Jambi. Parkir luas tersedia.
+          <br/>Klik peta di bawah untuk membuka Google Maps.</p>
+        <a href="https://maps.google.com/?q=Grand+Hall+Jambi" target="_blank" rel="noopener" style="display:block;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.12)">
+          <img src="https://maps.googleapis.com/maps/api/staticmap?center=-1.610,103.615&zoom=14&size=800x320&maptype=roadmap&markers=color:red%7C-1.610,103.615&key=" alt="Peta lokasi" style="width:100%;display:block" loading="lazy" />
+        </a>
+        <small style="color:var(--muted)">*Gambar peta statis—boleh kosong jika tanpa API key. Tautan tetap berfungsi.</small>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Dibuat dengan ❤️ — cukup buka file ini di Google Chrome. Edit teks, tanggal, dan lokasi sesuai kebutuhan.
+  </footer>
+
+<script>
+  // ====== Konfigurasi Cepat (ganti sesuai acara Anda) ======
+  const EVENT = {
+    title: 'Grand Launch & Gathering',
+    start: new Date('2025-12-31T19:00:00+07:00'), // WIB
+    end:   new Date('2025-12-31T21:00:00+07:00'),
+    location: 'Grand Hall, Jambi',
+    description: 'Peluncuran produk & temu komunitas. Dresscode: Smart Casual.',
+    waNumber: '6282282134206',
+    pageUrl: location.href,
+  };
+  // Update UI berdasar konfigurasi
+  document.getElementById('title').textContent = EVENT.title;
+  const pad = n => String(n).padStart(2,'0');
+  const dt = EVENT.start;
+  document.getElementById('datetime').textContent = `${pad(dt.getDate())} ${dt.toLocaleString('id-ID',{month:'short'})} ${dt.getFullYear()} • ${pad(dt.getHours())}:${pad(dt.getMinutes())} WIB`;
+
+  // ====== Countdown ======
+  const elD = document.getElementById('d');
+  const elH = document.getElementById('h');
+  const elM = document.getElementById('m');
+  const elS = document.getElementById('s');
+  function tick(){
+    const now = new Date();
+    let diff = Math.max(0, EVENT.start - now);
+    const sec = Math.floor(diff/1000)%60;
+    const min = Math.floor(diff/60000)%60;
+    const hr  = Math.floor(diff/3600000)%24;
+    const day = Math.floor(diff/86400000);
+    elD.textContent = day; elH.textContent = pad(hr); elM.textContent = pad(min); elS.textContent = pad(sec);
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ====== Smooth open + confetti ======
+  const confettiCanvas = document.getElementById('confetti');
+  const ctx = confettiCanvas.getContext('2d');
+  let confettiPieces = [];
+  function resize(){ confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
+  addEventListener('resize', resize); resize();
+  function spawnConfetti(count=180){
+    for(let i=0;i<count;i++){
+      confettiPieces.push({
+        x: Math.random()*confettiCanvas.width,
+        y: -20 - Math.random()*confettiCanvas.height*0.3,
+        r: 6+Math.random()*10,
+        s: 1+Math.random()*2,
+        a: Math.random()*Math.PI*2,
+        w: .5+Math.random(),
+        color: `hsl(${Math.random()*360},90%,60%)`
+      });
+    }
+  }
+  function drawConfetti(){
+    ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+    confettiPieces.forEach(p=>{
+      p.y += p.s*2; p.x += Math.sin(p.a+=0.02)*p.w;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
+      ctx.restore();
+    });
+    confettiPieces = confettiPieces.filter(p=>p.y < confettiCanvas.height+20);
+    requestAnimationFrame(drawConfetti);
+  }
+  drawConfetti();
+
+  document.getElementById('openBtn').addEventListener('click', ()=>{
+    spawnConfetti(240);
+    document.getElementById('details').scrollIntoView({behavior:'smooth'});
+  });
+
+  // ====== RSVP ======
+  document.getElementById('rsvpBtn').addEventListener('click', ()=>{
+    const name = prompt('Nama Anda untuk RSVP:');
+    if(!name) return;
+    const qty = prompt('Jumlah tamu (termasuk Anda):', '1');
+    const message = `Halo panitia, saya ${name}. Saya akan hadir di *${EVENT.title}* pada ${document.getElementById('datetime').textContent}. Jumlah tamu: ${qty||'1'}. Lokasi: ${EVENT.location}.`;
+    const wa = 
+    window.open(wa, '_blank');
+  });
+
+  // ====== Add to Calendar (ICS download) ======
+  function toICSDate(d){
+    // YYYYMMDDTHHMMSS offset -> Zulu; untuk kesederhanaan, kita ambil waktu lokal ke UTC
+    const z = new Date(d);
+    const YYYY = z.getUTCFullYear();
+    const MM = ('0'+(z.getUTCMonth()+1)).slice(-2);
+    const DD = ('0'+z.getUTCDate()).slice(-2);
+    const HH = ('0'+z.getUTCHours()).slice(-2);
+    const MI = ('0'+z.getUTCMinutes()).slice(-2);
+    const SS = ('0'+z.getUTCSeconds()).slice(-2);
+    return `${YYYY}${MM}${DD}T${HH}${MI}${SS}Z`;
+  }
+  function downloadICS(){
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Undangan Digital//ID\nBEGIN:VEVENT\nUID:${Date.now()}@undangan\nDTSTAMP:${toICSDate(new Date())}\nDTSTART:${toICSDate(EVENT.start)}\nDTEND:${toICSDate(EVENT.end)}\nSUMMARY:${EVENT.title}\nDESCRIPTION:${EVENT.description}\nLOCATION:${EVENT.location}\nEND:VEVENT\nEND:VCALENDAR`;
+    const blob = new Blob([ics], {type:'text/calendar'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${EVENT.title.replace(/\s+/g,'_')}.ics`;
+    a.click(); URL.revokeObjectURL(url);
+  }
+  document.getElementById('calBtn').addEventListener('click', downloadICS);
+
+  // ====== Share (WhatsApp + salin tautan) ======
+  document.getElementById('shareBtn').addEventListener('click', async ()=>{
+    const text = `Halo! Kamu diundang ke *${EVENT.title}*\n\nTanggal: ${document.getElementById('datetime').textContent}\nLokasi: ${EVENT.location}\n\nInfo lengkap: ${EVENT.pageUrl}`;
+    const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    if(navigator.share){
+      try{ await navigator.share({title:EVENT.title, text, url: EVENT.pageUrl}); return; }catch(e){/* fallback */}
+    }
+    const pick = confirm('Kirim via WhatsApp? Tekan OK. Jika Batal, tautan akan disalin.');
+    if(pick){ window.open(wa,'_blank'); }
+    else{
+      try{ await navigator.clipboard.writeText(text); alert('Teks undangan disalin ke clipboard ✅'); }
+      catch{ prompt('Salin manual teks undangan:', text); }
+    }
+  });
+</script>
+</body>
+</html>
