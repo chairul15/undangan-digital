@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undangan Ahmad & Raisha</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
+<style>
+body, html {margin:0; padding:0; font-family:'Arial', sans-serif; overflow-x:hidden;}
+body {background: linear-gradient(135deg,#ffb6c1,#ffc0cb); color:#fff;}
+section{min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:50px 20px; transition:all 1s ease;}
+h2{font-family:'Pacifico', cursive; font-size:2.5em; margin:20px 0;}
+p{font-size:1.2em; margin:10px 0;}
+button{padding:12px 25px; border:none; border-radius:50px; background:#ff69b4; color:#fff; font-size:1.1em; cursor:pointer; margin:5px; transition:0.3s;}
+button:hover{transform:scale(1.1) rotate(-3deg);}
+#rsvpForm{display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(255,192,203,0.95); padding:30px; border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.3); z-index:200; width:90%; max-width:400px;}
+#rsvpForm input, #rsvpForm button{display:block; width:100%; padding:10px; margin:10px 0; border-radius:10px; border:none; font-size:1em;}
+#closeForm{position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.2em; color:#fff; background:transparent;}
+.swiper-container{width:90%; max-width:600px; height:300px; margin:30px auto;}
+.swiper-slide{background:#fff; border-radius:20px; display:flex; justify-content:center; align-items:center; color:#000;}
+#musicBtn{position:fixed; bottom:20px; right:20px; width:50px; height:50px; border-radius:50%; background:#ff69b4; border:none; cursor:pointer; z-index:300;}
+#musicBtn:after{content:"🎵"; font-size:1.5em; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);}
+.confetti{position:absolute; bottom:-50px; border-radius:50%; animation:rise linear infinite;}
+@keyframes rise{0%{transform:translateY(0) scale(1);}50%{transform:translateY(-300px) scale(1.2);}100%{transform:translateY(-600px) scale(1);}}
+.nav-buttons{margin-top:20px;}
+</style>
+</head>
+<body>
+
+<!-- Musik -->
+<audio id="music" loop>
+<source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+</audio>
+<button id="musicBtn"></button>
+
+<!-- Sections -->
+<section id="splash">
+<h1 style="font-family:'Pacifico', cursive; font-size:3em;">Ahmad & Raisha</h1>
+<p>Selamat datang di undangan digital kami</p>
+<div class="nav-buttons">
+<button onclick="nextSection()">Mulai</button>
+</div>
+</section>
+
+<section id="info" style="display:none;">
+<h2>Info Pengantin</h2>
+<p>Ahmad & Raisha</p>
+<p>📅 1 Januari 2026 | 📍 Gedung Serbaguna Pink Blossom, Jambi</p>
+<div class="nav-buttons">
+<button onclick="prevSection()">Kembali</button>
+<button onclick="nextSection()">Lanjut</button>
+</div>
+</section>
+
+<section id="story" style="display:none;">
+<h2>Cerita Singkat</h2>
+<p>Bertemu pertama kali di kampus, kini siap menapaki perjalanan hidup bersama.</p>
+<div class="nav-buttons">
+<button onclick="prevSection()">Kembali</button>
+<button onclick="nextSection()">Lanjut</button>
+</div>
+</section>
+
+<section id="gallery" style="display:none;">
+<h2>Galeri Foto</h2>
+<div class="swiper-container">
+<div class="swiper-wrapper">
+<div class="swiper-slide"><img src="https://via.placeholder.com/300x200?text=Foto+1" style="width:100%; border-radius:15px;"></div>
+<div class="swiper-slide"><img src="https://via.placeholder.com/300x200?text=Foto+2" style="width:100%; border-radius:15px;"></div>
+<div class="swiper-slide"><img src="https://via.placeholder.com/300x200?text=Foto+3" style="width:100%; border-radius:15px;"></div>
+</div>
+<div class="swiper-pagination"></div>
+</div>
+<div class="nav-buttons">
+<button onclick="prevSection()">Kembali</button>
+<button onclick="nextSection()">Lanjut</button>
+</div>
+</section>
+
+<section id="location" style="display:none;">
+<h2>Lokasi Acara</h2>
+<p>Gedung Serbaguna Pink Blossom, Jambi</p>
+<iframe src="https://maps.google.com/maps?q=Jambi&t=&z=13&ie=UTF8&iwloc=&output=embed" width="90%" height="300" style="border:0;border-radius:15px;" allowfullscreen></iframe>
+<div class="nav-buttons">
+<button onclick="prevSection()">Kembali</button>
+<button onclick="nextSection()">Lanjut</button>
+</div>
+</section>
+
+<section id="schedule" style="display:none;">
+<h2>Jadwal Acara</h2>
+<p>10:00 – Akad Nikah</p>
+<p>12:00 – Resepsi</p>
+<p>15:00 – Hiburan</p>
+<div class="nav-buttons">
+<button onclick="prevSection()">Kembali</button>
+<button onclick="nextSection()">Lanjut</button>
+</div>
+</section>
+
+<section id="rsvp" style="display:none;">
+<h2>RSVP & Titip Kado</h2>
+<button onclick="openForm()">Isi Form</button>
+<div class="nav-buttons">
+<button onclick="prevSection()">Kembali</button>
+<button onclick="nextSection()">Lanjut</button>
+</div>
+</section>
+
+<section id="wishes" style="display:none;">
+<h2>Ucapan & Pesan</h2>
+<p>Tinggalkan pesan untuk pengantin:</p>
+<textarea id="message" style="width:80%;height:100px;border-radius:10px;border:none;padding:10px;"></textarea>
+<div class="nav-buttons">
+<button onclick="prevSection()">Kembali</button>
+</div>
+<button onclick="alert('Terima kasih atas pesannya!')">Kirim</button>
+</section>
+
+<!-- Popup RSVP Form -->
+<div id="rsvpForm">
+<span id="closeForm" onclick="closeForm()">✖</span>
+<h2>Form RSVP</h2>
+<input type="text" placeholder="Nama Anda" id="nama">
+<input type="text" placeholder="Jumlah Tamu" id="tamu">
+<button onclick="submitRSVP()">Kirim</button>
+</div>
+
+<!-- Library -->
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script>
+let sections = ['splash','info','story','gallery','location','schedule','rsvp','wishes'];
+let current = 0;
+
+// Music
+let music=document.getElementById('music');
+document.getElementById('musicBtn').onclick=()=>{if(music.paused){music.play();}else{music.pause();}};
+
+// Confetti
+for(let i=0;i<30;i++){
+let c=document.createElement('div');c.classList.add('confetti');
+c.style.left=Math.random()*100+'%';c.style.width=5+Math.random()*10+'px';c.style.height=c.style.width;
+c.style.background='hsl('+Math.random()*360+',70%,80%)';
+c.style.animationDuration=5+Math.random()*10+'s';
+c.style.opacity=Math.random();
+document.body.appendChild(c);}
+
+// Swiper
+var swiper = new Swiper('.swiper-container',{loop:true,pagination:{el:'.swiper-pagination',clickable:true},autoplay:{delay:3000}});
+
+// Animasi per section
+function showSection(index){
+    let section = document.getElementById(sections[index]);
+    section.style.display='flex';
+    
+    if(sections[index]=='splash'){
+        gsap.fromTo(section.children,{opacity:0,scale:0.5},{opacity:1,scale:1,duration:1.2,ease:"power2.out",stagger:0.3});
+    } else if(sections[index]=='info'){
+        gsap.from(section.children,{x:-200,opacity:0,duration:1.2,stagger:0.3,ease:"power2.out"});
+    } else if(sections[index]=='story'){
+        gsap.from(section.children,{x:200,opacity:0,duration:1.2,stagger:0.3,ease:"power2.out"});
+    } else if(sections[index]=='gallery'){
+        gsap.from(section.querySelector('.swiper-container'),{scale:0.7,opacity:0,duration:1.2,ease:"elastic.out(1,0.5)"});
+    } else if(sections[index]=='location'){
+        gsap.from(section.children,{opacity:0,y:50,duration:1.2,stagger:0.3,ease:"power2.out"});
+    } else if(sections[index]=='schedule'){
+        gsap.from(section.children,{y:200,opacity:0,duration:1.2,stagger:0.3,ease:"power2.out"});
+    } else if(sections[index]=='rsvp'){
+        gsap.from(section.children,{scale:0,opacity:0,duration:1.2,stagger:0.3,ease:"back.out(1.7)"});
+    } else if(sections[index]=='wishes'){
+        gsap.from(section.children,{opacity:0,scale:0.5,duration:1.2,stagger:0.3,ease:"power2.out"});
+    }
+}
+
+// Navigasi
+function nextSection(){
+    document.getElementById(sections[current]).style.display='none';
+    current++;
+    if(current>=sections.length) current=sections.length-1;
+    showSection(current);
+}
+function prevSection(){
+    document.getElementById(sections[current]).style.display='none';
+    current--;
+    if(current<0) current=0;
+    showSection(current);
+}
+
+// RSVP Form
+function openForm(){document.getElementById('rsvpForm').style.display='block';}
+function closeForm(){document.getElementById('rsvpForm').style.display='none';}
+function submitRSVP(){
+    let nama=document.getElementById('nama').value;
+    let tamu=document.getElementById('tamu').value;
+    if(nama && tamu){alert(`Terima kasih ${nama}, RSVP untuk ${tamu} tamu diterima!`);closeForm();}
+    else{alert('Silahkan isi semua data.');}
+}
+</script>
+</body>
+</html>
